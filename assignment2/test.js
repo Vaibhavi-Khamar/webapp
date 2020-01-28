@@ -27,38 +27,38 @@ describe('API endpoint GET', function () {
             });
     });
     // GET - Invalid path
-    it('should return Not Found', function () {
-        return chai.request(app)
-            .get('/INVALID_PATH')
-            .then(function (res) {
-                // throw new Error('Path exists!');
-                expect(res).to.have.status(404);
-            })
-            .catch(function (err) {
-                expect(err).to.have.status(404);
-            });
-    });
+    // it('should return Not Found', function () {
+    //     return chai.request(app)
+    //         .get('/INVALID_PATH')
+    //         .then(function (res) {
+    //             // throw new Error('Path exists!');
+    //             expect(res).to.have.status(404);
+    //         })
+    //         .catch(function (err) {
+    //             expect(err).to.have.status(404);
+    //         });
+    // });
 });
 
 
 /*refers to PORT where program is running.*/
-var server = supertest.agent("http://localhost:3000");
+// var server = supertest.agent("http://localhost:3000");
 
-describe("API endpoint POST", function () {
-    it("should return status code 201", function (done) {
-        server
-            .post('/v1/user')
-            .send({
-                "first_name": "Matt",
-                "last_name": "Hogan",
-                "password": "lkjhgfdsa",
-                "email_address": "hogan.matt@example.com"
-            })
-            .expect("Content-type", /json/)
-            .expect(201)
-            .end(function (err, res) {
-                res.status.should.equal(201);
-                done();
-            });
-    });
-});
+// describe("API endpoint POST", function () {
+//     it("should return status code 201", function (done) {
+//         server
+//             .post('/v1/user')
+//             .send({
+//                 "first_name": "Matt",
+//                 "last_name": "Hogan",
+//                 "password": "lkjhgfdsa",
+//                 "email_address": "hogan.matt@example.com"
+//             })
+//             .expect("Content-type", /json/)
+//             .expect(201)
+//             .end(function (err, res) {
+//                 res.status.should.equal(201);
+//                 done();
+//             });
+//     });
+// });
