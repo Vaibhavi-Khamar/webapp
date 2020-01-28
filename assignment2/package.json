@@ -1,0 +1,30 @@
+{
+  "name": "assignment2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "auth": "0.0.9",
+    "basic": "^2.0.3",
+    "basic-auth": "^2.0.1",
+    "bcrypt": "^3.0.7",
+    "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "express": "^4.17.1",
+    "mocha": "^7.0.0",
+    "mysql": "^2.17.1",
+    "nodemon": "^2.0.2",
+    "should": "^13.2.3",
+    "sinon": "^8.1.1",
+    "supertest": "^4.0.2",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "mocha test.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
