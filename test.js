@@ -9,13 +9,13 @@ const app = require('./app.js');
 
 describe('API endpoint GET', function () {
 
-    before(function () {
+    // before(function () {
 
-    });
+    // });
 
-    after(function () {
+    // after(function () {
 
-    });
+    // });
 
     it('should check body type & statuscode', function () {
         return chai.request(app)
