@@ -20,7 +20,7 @@ const Bill = BillModel(sequelize, Sequelize)
 sequelize.sync({ force: false })
   .then(() => {
     console.log(`Database & tables created here!`)
-  })
+  }).catch(function (err) {console.log(err)});
 
 module.exports = {
   User,
