@@ -22,7 +22,6 @@ sequelize.sync({ force: false })
     console.log(`Database & tables created here!`)
   }).catch(function (err) {
     console.log(err)
-    res.end()
     });
 
 module.exports = {
