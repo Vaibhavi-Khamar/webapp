@@ -6,32 +6,32 @@ const chai = require('chai');
 chai.use(require('chai-http'));
 const app = require('./index.js');
 
-describe('models check', function () {
-    it('returns the user model', function () {
+describe('models check', function() {
+    it('returns the user model', function() {
         var models = require('./sequelize');
         expect(models.User).to.be.ok();
     });
 
-    it('returns the bill model', function () {
+    it('returns the bill model', function() {
         var models = require('./sequelize');
         expect(models.Bill).to.be.ok();
     });
 });
 
-describe('API endpoint GET', function () {
+describe('API endpoint GET', function() {
 
-    before(function () {
-
-    });
-
-    after(function () {
+    before(function() {
 
     });
 
-    it('should check body type & statuscode', function () {
+    after(function() {
+
+    });
+
+    it('should check body type & statuscode', function() {
         return chai.request(app)
             .get('/user/self')
-            .then(function (res) {
+            .then(function(res) {
                 // expect(res).to.have.status(200);
                 // expect(res).to.be.json;
                 expect(res.body).to.be.an('object');
