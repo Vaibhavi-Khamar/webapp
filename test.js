@@ -1,5 +1,3 @@
-'strict'
-
 var expect = require('expect.js');
 const chai = require('chai');
 //const expect = require('chai').expect;

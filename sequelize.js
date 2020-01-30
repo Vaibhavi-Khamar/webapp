@@ -17,10 +17,12 @@ const sequelize = new Sequelize(DATABASE_NAME, USERNAME, PASSWORD, {
 const User = UserModel(sequelize, Sequelize)
 const Bill = BillModel(sequelize, Sequelize)
 
-sequelize.sync({ force: false })
-  .then(() => {
-    console.log(`Database & tables created here!`)
-  })
+// sequelize.sync({ force: false })
+//   .then(() => {
+//     console.log(`Database & tables created here!`)
+//   }).catch(function (err) {
+//     console.log(err)
+//     });
 
 module.exports = {
   User,
