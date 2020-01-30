@@ -12,10 +12,10 @@ describe('models check', function() {
         expect(models.User).to.be.ok();
     });
 
-    it('returns the bill model', function() {
-        var models = require('./sequelize');
-        expect(models.Bill).to.be.ok();
-    });
+    // it('returns the bill model', function() {
+    //     var models = require('./sequelize');
+    //     expect(models.Bill).to.be.ok();
+    // });
 });
 
 describe('API endpoint GET', function() {
