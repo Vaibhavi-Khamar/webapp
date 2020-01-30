@@ -1,18 +1,18 @@
 ---
 
-version: 2 # use CircleCI 2.1
+version: 2 # use CircleCI 2
 jobs: # a collection of steps
-  pr_check: # runs not using Workflows must have a `build` job as entry point  
+  pr_check: 
     docker: # run the steps with Docker
       - image: circleci/node:12.14.1 # ...with this image as the primary container; this is where all `steps` will run
-      # - image: circleci/mysql:5.7.25 # and this image as the secondary service container  # - image: circleci/mysql:8.0.4
-      #   environment:
-      #     # MYSQL_ALLOW_EMPTY_PASSWORD: yes
-      #     # MYSQL_ROOT_PASSWORD: i$hanr@ghav2
-      #     MYSQL_ROOT_PASSWORD: root
-      #     MYSQL_DATABASE: clouddb
-      #     MYSQL_USER: root
-      #     #MYSQL_PASSWORD: root
+      - image: circleci/mysql:5.7.25 # and this image as the secondary service container 
+        environment:
+          # MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          # MYSQL_ROOT_PASSWORD: i$hanr@ghav2
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: clouddb
+          MYSQL_USER: root
+          #MYSQL_PASSWORD: root
     steps: # a collection of executable commands
       - checkout # special step to check out source code to working directory
       - run:
@@ -27,23 +27,22 @@ jobs: # a collection of steps
           command: npm test
 
   build:
-    docker: # run the steps with Docker
-      - image: circleci/node:12.14.1 # ...with this image as the primary container; this is where all `steps` will run
-      - image: circleci/mysql:5.7.25 # and this image as the secondary service container
+    docker: 
+      - image: circleci/node:12.14.1 
+      - image: circleci/mysql:5.7.25 
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: clouddb
           MYSQL_USER: root
-    steps: # a collection of executable commands
-      - checkout # special step to check out source code to working directory
+    steps: 
+      - checkout 
       - run:
           name: update-npm
-          # command: echo "Hello world"
           command: 'sudo npm install -g npm@latest'
       - run:
           name: install-npm-wee
           command: npm install
-      - run: # run tests
+      - run: 
           name: test
           command: npm test
 
