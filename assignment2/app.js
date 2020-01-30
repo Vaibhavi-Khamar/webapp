@@ -83,9 +83,6 @@ router.route('/user/self')
 app.use('/v1', postrouter);
 
 function auth(req, res, next) {
-    if (req.path === '/user/self') {
-        return next();
-    }
     var authHeader = req.headers.authorization;
     if (!authHeader) {
         return res.status(401).json({ message: 'Missing Authorization Header' });
