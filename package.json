@@ -23,7 +23,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "nodemon app.js",
-    "test": "mocha assignment2 test.js"
+    "test": "mocha test.js"
   },
   "author": "",
   "license": "ISC"
