@@ -11,8 +11,8 @@ jobs: # a collection of steps
           # MYSQL_ROOT_PASSWORD: i$hanr@ghav2
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: clouddb
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
+          # MYSQL_USER: root
+          # MYSQL_PASSWORD: root
     steps: # a collection of executable commands
       - checkout # special step to check out source code to working directory
       - run:
