@@ -7,7 +7,6 @@ jobs: # a collection of steps
       - image: circleci/node:12.14.1 # ...with this image as the primary container; this is where all `steps` will run
       - image: circleci/mysql:5.7.25 # and this image as the secondary service container  # - image: circleci/mysql:8.0.4
         environment:
-          MYSQL_ROOT_PASSWORD: rootpw
           MYSQL_DATABASE: mydb
           MYSQL_USER: root
           MYSQL_PASSWORD: root
