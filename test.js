@@ -6,17 +6,17 @@ const chai = require('chai');
 chai.use(require('chai-http'));
 const app = require('./index.js');
 
-describe('models check', function() {
-    it('returns the user model', function() {
-        var models = require('./sequelize');
-        expect(models.User).to.be.ok();
-    });
+// describe('models check', function() {
+//     it('returns the user model', function() {
+//         var models = require('./sequelize');
+//         expect(models.User).to.be.ok();
+//     });
 
-    // it('returns the bill model', function() {
-    //     var models = require('./sequelize');
-    //     expect(models.Bill).to.be.ok();
-    // });
-});
+//     // it('returns the bill model', function() {
+//     //     var models = require('./sequelize');
+//     //     expect(models.Bill).to.be.ok();
+//     // });
+// });
 
 describe('API endpoint GET', function() {
 
