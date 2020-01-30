@@ -10,7 +10,7 @@ jobs: # a collection of steps
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_ROOT_PASSWORD: ''
           # MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: mydb
+          MYSQL_DATABASE: clouddb
           MYSQL_USER: root
           MYSQL_PASSWORD: root
     steps: # a collection of executable commands
