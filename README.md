@@ -17,3 +17,5 @@ This will start the application and create an sqlite database in your app dir.
 Added some Mocha based test. Run them by npm test. 
 
 pr_check and build jobs of circleCI will be triggered when creating a pull request
+
+Changeing readme
