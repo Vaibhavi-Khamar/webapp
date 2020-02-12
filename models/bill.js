@@ -14,7 +14,7 @@ module.exports = (sequelize, type) => {
             references: { model: 'users', key: 'id', as: 'owner_id' },
         },
         categories: {
-            type: type.STRING,
+            type: type.JSON,
             allowNull: false
         },
         bill_date: {
@@ -34,25 +34,20 @@ module.exports = (sequelize, type) => {
             values: ['paid', 'due', 'past_due', 'no_payment_required'],
             allowNull: false
         },
-        
-        // created_ts: {
-        //     type: type.DATE,
-        //     allowNull: false
+        // attachment: {
+        //     file_id:{type:type.STRING,references: { model: 'files', key: 'id', as: 'file_id' },},
+        //     file_name:{type: type.STRING,},
+        //     url:{type: type.STRING},
+        //     upload_date:{type: type.DATE,},
         // },
-        // updated_ts: {
-        //     type: type.DATE,
-        //     allowNull: false
-        // }
-//         // I don't want createdAt
-//   createdAt: false,
- 
-//   // I want updatedAt to actually be called updateTimestamp
-//   updatedAt: 'updateTimestamp'
 
     });
 
     Bill.associate = function (models) {
         Bill.belongsTo(models.User, { foreignKey: 'owner_id', onDelete: "CASCADE" });
+        Bill.hasOne(models.File, { foreignKey: 'id', as: 'file_id' });
+        //Bill.hasOne(models.Metadata, { foreignKey: '_id' })
+        // Bill.hasOne(models.Metadata, { foreignKey: 'bill_id', as: 'metadata' })
     };
     return Bill;
 };

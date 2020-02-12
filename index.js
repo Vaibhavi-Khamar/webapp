@@ -10,6 +10,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const uuidv1 = require('uuid/v1');
 
+const multer = require('multer');
+const File = require('./sequelize').File;
+const Metadata = require('./sequelize').Metadata;
+const fs = require('fs');
+
 app.use(bodyParser.json())
 
 // Create user
@@ -18,13 +23,16 @@ app.post('/v1/user', (req, res) => {
     let first_name = req.body.first_name;
     let last_name = req.body.last_name;
     let email_address = req.body.email_address;
-    if (psw.length < 8) {
-        console.log("Password should be minimum of 8 characters...")
-        res.status(400).send("Password should be minimum of 8 characters");
-    } else if (!first_name || !last_name || !psw || !email_address) {
+    // if (psw.length < 8) {
+    //     console.log("Password should be minimum of 8 characters...")
+    //     res.status(400).send("Password should be minimum of 8 characters");
+    if (!first_name || !last_name || !psw || !email_address) {
         res.status(400).send({
             Message: "Please provide all required fields - first_name, last_name, password, email_address"
         });
+    } else if (psw.length < 8){
+        console.log("Password should be minimum of 8 characters...")
+        res.status(400).send("Password should be minimum of 8 characters");
     } else {
         bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
             let id = uuidv1();
@@ -46,6 +54,9 @@ app.post('/v1/user', (req, res) => {
                         res.status(400).end()
                     });
                 };
+            }).catch(err => {
+                console.log(err);
+                res.status(400).end()
             });
         });
     };
@@ -62,18 +73,18 @@ app.get('/v1/user/self', (req, res) => {
     } else {
         var username = credentials.name;
         var password = credentials.pass;
-        User.findOne({ where: { email_address: username } }).then(user => {
+        User.findAll({ where: { email_address: username } }).then(user => {
             var valid = true;
-            valid = compare(username, user.email_address) && valid;
-            valid = bcrypt.compareSync(password, user.password) && valid;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
             if (valid) {
                 var data = {
-                    id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    email_address: user.email_address,
-                    createdAt: user.createdAt,
-                    updatedAt: user.updatedAt
+                    id: user[0].id,
+                    first_name: user[0].first_name,
+                    last_name: user[0].last_name,
+                    email_address: user[0].email_address,
+                    createdAt: user[0].createdAt,
+                    updatedAt: user[0].updatedAt
                 }
                 console.log(data)
                 return res.status(200).json(data)
@@ -84,9 +95,11 @@ app.get('/v1/user/self', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
+            console.log(err)
+            res.status(400).end();
+            // res.statusCode = 401
+            // res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+            // res.end('Unauthorized : Authentication error')
 
         });
     };
@@ -102,10 +115,10 @@ app.put('/v1/user/self', (req, res) => {
     } else {
         var username = credentials.name;
         var password = credentials.pass;
-        User.findOne({ where: { email_address: username } }).then(user => {
+        User.findAll({ where: { email_address: username } }).then(user => {
             var valid = true;
-            valid = compare(username, user.email_address) && valid;
-            valid = bcrypt.compareSync(password, user.password) && valid;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
             if (valid) {
                 let psw = req.body.password;
                 if (psw.length < 8) {
@@ -133,10 +146,8 @@ app.put('/v1/user/self', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
-
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
@@ -172,6 +183,11 @@ app.post('/v1/bill', (req, res) => {
             if (valid) {
                 var owner_id = user.id;
                 let data = { id, owner_id, createdAt, updatedAt, vendor, bill_date, due_date, amount_due, categories, payment_status }
+                if (amount_due < 0.01) {
+                    res.status(400).send({
+                        Message: "amount_due can not be less than 0.01"
+                    });
+                }
                 if (!vendor || !bill_date || !due_date || !amount_due || !categories || !payment_status) {
                     res.status(400).send({
                         Message: "Please provide all required fields - vendor, bill_date, due_date, amount_due, categories, payment_status(paid/due/past_due/no_payment_required) "
@@ -194,9 +210,8 @@ app.post('/v1/bill', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
@@ -220,6 +235,11 @@ app.get('/v1/bills', (req, res) => {
                 var owner_id = user.id;
                 Bill.findAll({ where: { owner_id: owner_id } }).then(bill => {
                     return res.status(200).json(bill)
+                }).catch(err => {
+                    console.log(err);
+                    res.status(404).json({
+                        "message": "bill not found"
+                    });
                 });
             } else {
                 console.log("Authentication error")
@@ -228,10 +248,8 @@ app.get('/v1/bills', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
-
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
@@ -246,20 +264,20 @@ app.get('/v1/bill/:id', (req, res) => {
     } else {
         var username = credentials.name;
         var password = credentials.pass;
-        User.findOne({ where: { email_address: username } }).then(user => {
+        User.findAll({ where: { email_address: username } }).then(user => {
             var valid = true;
-            valid = compare(username, user.email_address) && valid;
-            valid = bcrypt.compareSync(password, user.password) && valid;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
             if (valid) {
-                var owner_id = user.id
+                var owner_id = user[0].id
                 Bill.findOne(
                     {
-                        where: { id: req.params.id, owner_id: owner_id },
-                    }
+                        where: { id: req.params.id, owner_id: owner_id }
+                    },//{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
                 ).then(bill => res.status(200).json(bill)).catch(err => {
                     console.log(err);
                     res.status(404).json({
-                        "message": err
+                        "message": "bill not found"
                     })
                 })
             } else {
@@ -269,10 +287,8 @@ app.get('/v1/bill/:id', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
-
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
@@ -297,12 +313,12 @@ app.put('/v1/bill/:id', (req, res) => {
     } else {
         var username = credentials.name;
         var password = credentials.pass;
-        User.findOne({ where: { email_address: username } }).then(user => {
+        User.findAll({ where: { email_address: username } }).then(user => {
             var valid = true;
-            valid = compare(username, user.email_address) && valid;
-            valid = bcrypt.compareSync(password, user.password) && valid;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
             if (valid) {
-                var owner_id = user.id;
+                var owner_id = user[0].id;
                 let data = { id: req.params.id, updatedAt, owner_id, vendor, bill_date, due_date, amount_due, categories, payment_status }
                 Bill.update({
                     vendor, bill_date, due_date, amount_due, categories, payment_status
@@ -321,10 +337,8 @@ app.put('/v1/bill/:id', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
-
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
@@ -339,12 +353,12 @@ app.delete('/v1/bill/:id', (req, res) => {
     } else {
         var username = credentials.name;
         var password = credentials.pass;
-        User.findOne({ where: { email_address: username } }).then(user => {
+        User.findAll({ where: { email_address: username } }).then(user => {
             var valid = true;
-            valid = compare(username, user.email_address) && valid;
-            valid = bcrypt.compareSync(password, user.password) && valid;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
             if (valid) {
-                var owner_id = user.id
+                var owner_id = user[0].id
                 Bill.destroy({
                     where: { id: req.params.id, owner_id: owner_id }
                 }).then(function (result) {
@@ -352,7 +366,7 @@ app.delete('/v1/bill/:id', (req, res) => {
                 }).catch(err => {
                     console.log(err);
                     res.status(404).json({
-                        "message": err
+                        "message": "cannot delete bill"
                     });
                 });
             } else {
@@ -362,13 +376,205 @@ app.delete('/v1/bill/:id', (req, res) => {
                 res.end('Unauthorized : Authentication error')
             }
         }).catch(function (err) {
-            res.statusCode = 401
-            res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
-            res.end('Unauthorized : Authentication error')
-
+            console.log(err);
+            res.status(400).end();
         });
     };
 });
+
+var storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "/Users/vaibhavi/webapp/uploads"); //"./uploads"
+    },
+    filename: function (req, file, callback) {
+        callback(null, file.originalname + '-' + Date.now());
+        console.log(file.originalname)
+    }
+});
+const fileFilter = function (req, file, callback) {
+    if (!file.originalname.match(/\.(png|jpeg|jpg|pdf)$/)) {
+        console.log("only image files are allowed");
+        return callback(new Error('Only image files are allowed'), false);
+    }
+    callback(null, true);
+};
+
+var upload = multer({ storage: storage, fileFilter: fileFilter })
+
+// attach a file
+app.post('/v1/bill/:id/file', upload.single('file'), (req, res) => {
+    var credentials = auth(req);
+    if (!credentials) {
+        res.statusCode = 401
+        res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+        res.end('Unauthorized : Authentication error')
+    } else {
+        var username = credentials.name;
+        var password = credentials.pass;
+        User.findAll({ where: { email_address: username } }).then(user => {
+            var valid = true;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
+            if (valid) {
+                //console.log(req.files)
+                if (!req.file) return res.send('Please upload a file')
+                let file_name = req.file.originalname;
+                let url = req.file.path;
+                let size = req.file.size;
+                let bill_id = req.params.id;
+                let id = uuidv1();
+                var today = new Date();
+                let upload_date = today;
+                //console.log(req.body)
+                let data = { file_name, id, url, upload_date }
+
+                Metadata.findOne(
+                    { where: { bill_id: req.params.id } }
+                ).then(result => {
+                    if (result) {
+                        res.status(400).send("First delete existing file")
+                    } else {
+                        Metadata.create({
+                            file_name, id, url, upload_date, size, bill_id
+                        }).then(metadata => {
+                            File.create({
+                                file_name, id, url, upload_date
+                            }).then(file => res.status(201).json(data)).catch(err => {
+                                console.log(err);
+                                res.status(400).end()
+                            });
+                            res.end()
+                            // File.create({
+                            //     file_name, id, url, upload_date
+                            // }).then(file => {
+                            //     Metadata.create({
+                            //         file_name, id, url, upload_date, size, bill_id
+                            //     }).then(metadata => res.end()).catch(err => {
+                            //         console.log(err);
+                            //         res.status(400).end()
+                            //     });
+                            //     res.status(201).json(data)
+                        }).catch(err => {
+                            console.log(err);
+                            res.status(400).end()
+                        });
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    res.status(400).end()
+                });
+            } else {
+                console.log("Authentication error")
+                res.statusCode = 401
+                res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+                res.end('Unauthorized : Authentication error')
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.status(400).end();
+        });
+    };
+});
+
+// get a file
+app.get('/v1/bill/:id/file/:id', (req, res) => {
+    var credentials = auth(req);
+    if (!credentials) {
+        res.statusCode = 401
+        res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+        res.end('Unauthorized : Authentication error')
+    } else {
+        var username = credentials.name;
+        var password = credentials.pass;
+        User.findAll({ where: { email_address: username } }).then(user => {
+            var valid = true;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
+            if (valid) {
+                File.findOne(
+                    {
+                        where: { id: req.params.id },
+                    }
+                ).then(file => res.status(200).json(file)).catch(err => {
+                    console.log(err);
+                    res.status(404).json({
+                        "message": "file not found"
+                    })
+                })
+            } else {
+                console.log("Authentication error")
+                res.statusCode = 401
+                res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+                res.end('Unauthorized : Authentication error')
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.status(400).end();
+        });
+    };
+});
+
+// delete a file
+app.delete('/v1/bill/:id/file/:id', (req, res) => {
+    var credentials = auth(req);
+    if (!credentials) {
+        res.statusCode = 401
+        res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+        res.end('Unauthorized : Authentication error')
+    } else {
+        var username = credentials.name;
+        var password = credentials.pass;
+        User.findAll({ where: { email_address: username } }).then(user => {
+            var valid = true;
+            valid = compare(username, user[0].email_address) && valid;
+            valid = bcrypt.compareSync(password, user[0].password) && valid;
+            if (valid) {
+                File.findOne({ where: { id: req.params.id } }).then(function (file) {
+                    const path = file.url;
+                    fs.unlink(path, (err) => {
+                        if (err) throw err;
+                        console.log('successfully deleted from dir');
+                        res.status(204).end();
+                    });
+                    File.destroy({
+                        where: { id: req.params.id }
+                    }).then(function (file) {
+                        res.status(204).end();
+                    }).catch(err => {
+                        console.log(err);
+                        res.status(404).json({
+                            "message": "cannot delete from file"
+                        });
+                    });
+                    Metadata.destroy({
+                        where: { id: req.params.id }
+                    }).then(function (file) {
+                        res.end();
+                    }).catch(err => {
+                        console.log(err);
+                        res.status(404).json({
+                            "message": "cannot delete from metadata"
+                        });
+                    });
+                }).catch(err => {
+                    console.log(err);
+                    res.status(404).json({
+                        "message": "file not found"
+                    });
+                });
+            } else {
+                console.log("Authentication error")
+                res.statusCode = 401
+                res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+                res.end('Unauthorized : Authentication error')
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.status(400).end();
+        });
+    };
+});
+
 
 const port = 3001
 app.listen(port, () => {
@@ -376,3 +582,16 @@ app.listen(port, () => {
 });;
 
 module.exports = app;
+
+// app.post('/v1/bill/:id/file', (req, res) => {
+// var upload = multer({ storage : storage}).single('file');
+//     //global.appRoot = __dirname;
+//     //const file = global.appRoot + '/uploads/' + req.file.filename;
+//     upload(req,res,function(err) {
+//         if(err) {
+//             return res.end("Error uploading file.");
+//         }
+//         if (!req.file) return res.send('Please upload a file')
+//         res.end("File is uploaded");
+//     });
+// });
