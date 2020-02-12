@@ -1,5 +1,5 @@
 # webapp
-##Bill Tracking application:
+## Bill Tracking application:
 
 This is a node js application with MySQL, Express, and Sequelize: Node and Sequelize to query and route data in the app
 
@@ -12,14 +12,14 @@ npm install
 
 Root of the endpoint will be webapp.
 
-##Starting App:
+## Starting App:
 
 ```bash
 npm start
 ```
 This will start the application and create a mysql database in your app dir.
 
-##Unit Test:
+## Unit Test:
 
 Added some Mocha based test. Run them using
 ```bash
