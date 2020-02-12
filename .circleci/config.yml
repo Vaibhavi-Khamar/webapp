@@ -51,6 +51,10 @@ workflows:
   pr-check-workflow:
     jobs:
       - pr_check 
-  build_deploy:
+  build-and-deploy:
     jobs:
-      - build     
+      - build:
+        filters:
+          branches:
+            only:
+              -master     
