@@ -273,7 +273,7 @@ app.get('/v1/bill/:id', (req, res) => {
                 Bill.findOne(
                     {
                         where: { id: req.params.id, owner_id: owner_id }
-                    },//{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
+                    },//{include:[{model:File, as:file}]}, //{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
                 ).then(bill => res.status(200).json(bill)).catch(err => {
                     console.log(err);
                     res.status(404).json({
@@ -393,8 +393,8 @@ var storage = multer.diskStorage({
 });
 const fileFilter = function (req, file, callback) {
     if (!file.originalname.match(/\.(png|jpeg|jpg|pdf)$/)) {
-        console.log("only image files are allowed");
-        return callback(new Error('Only image files are allowed'), false);
+        console.log("only png/jpeg/jpg/pdf files are allowed");
+        return callback(new Error('ERROR IN FILE FORMATE: ONLY png/jpeg/jpg/pdf FILES ARE ALLOWED'), false);
     }
     callback(null, true);
 };
@@ -439,11 +439,11 @@ app.post('/v1/bill/:id/file', upload.single('file'), (req, res) => {
                         }).then(metadata => {
                             File.create({
                                 file_name, id, url, upload_date
-                            }).then(file => res.status(201).json(data)).catch(err => {
+                            }).then(file => res.end()).catch(err => {
                                 console.log(err);
                                 res.status(400).end()
                             });
-                            res.end()
+                            res.status(201).json(data)
                             // File.create({
                             //     file_name, id, url, upload_date
                             // }).then(file => {
