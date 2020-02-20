@@ -582,16 +582,3 @@ app.listen(port, () => {
 });;
 
 module.exports = app;
-
-// app.post('/v1/bill/:id/file', (req, res) => {
-// var upload = multer({ storage : storage}).single('file');
-//     //global.appRoot = __dirname;
-//     //const file = global.appRoot + '/uploads/' + req.file.filename;
-//     upload(req,res,function(err) {
-//         if(err) {
-//             return res.end("Error uploading file.");
-//         }
-//         if (!req.file) return res.send('Please upload a file')
-//         res.end("File is uploaded");
-//     });
-// });
