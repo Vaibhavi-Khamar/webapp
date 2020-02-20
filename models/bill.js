@@ -50,4 +50,5 @@ module.exports = (sequelize, type) => {
         // Bill.hasOne(models.Metadata, { foreignKey: 'bill_id', as: 'metadata' })
     };
     return Bill;
+    
 };
