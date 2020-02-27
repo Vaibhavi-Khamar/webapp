@@ -19,14 +19,13 @@ module.exports = (sequelize, type) => {
         },
         bill_id: {
             type: type.STRING,
-            references: { model: 'bills', key: 'id', as: 'bill_id' },
         },
     }, {
         timestamps: false,
     });
 
     Metadata.associate = function (models) {
-        Metadata.belongsTo(models.Bill, { foreignKey: 'bill_id', onDelete: "CASCADE" });
+        //Metadata.belongsTo(models.Bill, { foreignKey: 'bill_id', onDelete: "CASCADE" });
     };
     return Metadata;
 };
