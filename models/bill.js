@@ -11,7 +11,7 @@ module.exports = (sequelize, type) => {
         },
         owner_id: {
             type: type.STRING,
-            references: { model: 'users', key: 'id', as: 'owner_id' },
+            allowNull: false
         },
         categories: {
             type: type.JSON,
@@ -35,19 +35,14 @@ module.exports = (sequelize, type) => {
             allowNull: false
         },
         // attachment: {
-        //     file_id:{type:type.STRING,references: { model: 'files', key: 'id', as: 'file_id' },},
-        //     file_name:{type: type.STRING,},
-        //     url:{type: type.STRING},
-        //     upload_date:{type: type.DATE,},
+        //     type: type.STRING,
+        //     allowNull: true
         // },
 
     });
 
     Bill.associate = function (models) {
-        Bill.belongsTo(models.User, { foreignKey: 'owner_id', onDelete: "CASCADE" });
-        Bill.hasOne(models.File, { foreignKey: 'id', as: 'file_id' });
-        //Bill.hasOne(models.Metadata, { foreignKey: '_id' })
-        // Bill.hasOne(models.Metadata, { foreignKey: 'bill_id', as: 'metadata' })
+        Bill.hasOne(models.Metadata, { foreignKey: 'bill_id', as:'bill_id' });
     };
     return Bill;
     

@@ -21,7 +21,8 @@ module.exports = (sequelize, type) => {
     });
 
     File.associate = function (models) {
-        File.belongsTo(models.Bill, { onDelete: "CASCADE" });
+        //File.belongsTo(models.Bill, { onDelete: "CASCADE" });
+        File.hasOne(models.Bill, {foreignKey: 'attachment', as:'attachment'})
     };
     return File;
 };
