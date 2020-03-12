@@ -34,7 +34,7 @@ jobs: # a collection of steps
             --application-name csye6225-webapp \
             --description "This is my deployment" \
             --ignore-hidden-files \
-            --s3-location s3://"codedeploy.vaibhavikhamar.me"/csye6225-webapp-codedeploy-${CIRCLE_BUILD_NUM}.zip \
+            --s3-location s3://codedeploy.vaibhavikhamar.me/csye6225-webapp-codedeploy-${CIRCLE_BUILD_NUM}.zip \
             --source .
       - run:
           name: Make CodeDeploy API call
