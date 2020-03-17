@@ -1,4 +1,4 @@
-#!/bin/basha
+
 
 cd /opt/codedeploy-agent/deployment-root/
 mkdir /home/ubuntu/webapp
