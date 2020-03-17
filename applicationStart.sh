@@ -1,5 +1,5 @@
 #!/bin/bashs
 
-cd /webapp
+cd home/ubuntu/webapp
 # npm start
 pm2 start index.js
