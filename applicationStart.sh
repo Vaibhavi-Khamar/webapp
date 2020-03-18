@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /home/ubuntu/webapp
-pm2 start index.js
+pm2 stop /home/ubuntu/webapp/index.js
+pm2 start /home/ubuntu/webapp/index.js
