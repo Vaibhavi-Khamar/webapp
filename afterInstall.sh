@@ -1,5 +1,4 @@
-
-
+#!/bin/bash
 cd /opt/codedeploy-agent/deployment-root/
 mkdir /home/ubuntu/webapp
 cd /home/ubuntu/webapp
