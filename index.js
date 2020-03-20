@@ -33,7 +33,7 @@ var logger = new winston.createLogger({
         new winston.transports.File({
             timestamp: true,
             name: "cloudwatch_log_stream",
-            filename: path.resolve(__dirname, "log/csye6225.log"),
+            filename: path.resolve(__dirname, "logs/csye6225.log"),
             json: true
         })
     ]
