@@ -27,3 +27,5 @@ npm test
 ``` 
 
 pr_check job of circleCI will be triggered when creating a pull request & build_deploy job will be triggered after merging PR.
+
+update

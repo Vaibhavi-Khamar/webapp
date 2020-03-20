@@ -6,7 +6,7 @@ const User = require('./sequelize').User;
 const Bill = require('./sequelize').Bill;
 const compare = require('tsscmp');
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const uuidv1 = require('uuid/v1');
 
@@ -14,6 +14,7 @@ const multer = require('multer');
 const File = require('./sequelize').File;
 const Metadata = require('./sequelize').Metadata;
 const fs = require('fs');
+const path = require('path');
 
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
@@ -25,8 +26,29 @@ const BUCKET_NAME = process.env.S3BUCKET_NAME;
 
 app.use(bodyParser.json())
 
+const winston = require('winston');
+var logger = new winston.createLogger({
+    level: 'info',
+    transports: [
+        new (winston.transports.Console)(),
+        new winston.transports.File({
+            timestamp: true,
+            name: "cloudwatch_log_stream",
+            filename: path.resolve(__dirname, "logs/csye6225.log"),
+            json: true
+        })
+    ]
+});
+
+var SDC = require('statsd-client'),
+    sdc = new SDC({host: 'statsd.example.com', port: 8125});
+
 //----------------------------------------- Create user -----------------------------------------//
 app.post('/v1/user', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('USER_POST counter');
+
     let psw = req.body.password;
     let first_name = req.body.first_name;
     let last_name = req.body.last_name;
@@ -50,14 +72,17 @@ app.post('/v1/user', (req, res) => {
                 { where: { email_address: req.body.email_address } }
             ).then(user => {
                 if (user) {
+                    logger.info ("User already registered")
                     res.status(400).send("User already registered")
                 } else {
                     User.create({
                         id, first_name: req.body.first_name, last_name: req.body.last_name, password: hash, email_address: req.body.email_address, createdAt, updatedAt
                     }).then(user => {
+                        logger.info ("User created"+data)
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
+                        logger.error ("Error in create user"+err)
                         console.log(err);
                         res.status(400).end()
                     });
@@ -68,11 +93,18 @@ app.post('/v1/user', (req, res) => {
             });
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("USER_POST Time Duration",duration);
 })
 
 
 //----------------------------------------- get user -----------------------------------------//
 app.get('/v1/user/self', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('USER_GET counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -94,6 +126,7 @@ app.get('/v1/user/self', (req, res) => {
                     createdAt: user[0].createdAt,
                     updatedAt: user[0].updatedAt
                 }
+                logger.info ("GET USER successful"+data)
                 console.log(data)
                 return res.status(200).json(data)
             } else {
@@ -111,10 +144,17 @@ app.get('/v1/user/self', (req, res) => {
 
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("USER_GET Time Duration",duration);
 });
 
 //----------------------------------------- update user -----------------------------------------//
 app.put('/v1/user/self', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('USER_PUT counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -141,7 +181,11 @@ app.put('/v1/user/self', (req, res) => {
                             first_name: req.body.first_name, last_name: req.body.last_name, password: hash, updatedAt
                         }, {
                             where: { email_address: req.body.email_address }
-                        }).then(user => res.status(204).end()).catch(err => {
+                        }).then(user => {
+                            logger.info ("User updated")
+                            res.status(204).end()
+                        }).catch(err => {
+                            logger.error ("Error in updating user"+err)
                             console.log(err);
                             res.status(400).end();
                         });
@@ -158,10 +202,17 @@ app.put('/v1/user/self', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("USER_PUT Time Duration",duration);
 });
 
 //----------------------------------------- create bill -----------------------------------------//
 app.post('/v1/bill', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('BILL_POST counter');
+
     let vendor = req.body.vendor;
     let bill_date = req.body.bill_date;
     let due_date = req.body.due_date;
@@ -205,9 +256,11 @@ app.post('/v1/bill', (req, res) => {
                         id, vendor, owner_id, bill_date, due_date, amount_due, categories, payment_status, createdAt, updatedAt
                     }).then(bill => {
                         //Bill.update({ owner_id }, { where: { id: id } }).then(bill => res.end())
+                        logger.info ("Bill created"+data)
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
+                        logger.error ("Create bill failed"+err)
                         console.log(err);
                         res.status(400).end()
                     });
@@ -223,11 +276,18 @@ app.post('/v1/bill', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("BILL_POST Time Duration",duration);
 });
 
 
 // get bills
 app.get('/v1/bills', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('BILL_GET counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -243,8 +303,10 @@ app.get('/v1/bills', (req, res) => {
             if (valid) {
                 var owner_id = user.id;
                 Bill.findAll({ where: { owner_id: owner_id } }).then(bill => {
+                    logger.info ("GET BILL succcessful"+bill)
                     return res.status(200).json(bill)
                 }).catch(err => {
+                    logger.info ("Bill not found"+err)
                     console.log(err);
                     res.status(404).json({
                         "message": "bill not found"
@@ -261,10 +323,17 @@ app.get('/v1/bills', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("BILL_GET Time Duration",duration);
 });
 
 //----------------------------------------- get bill by id -----------------------------------------//
 app.get('/v1/bill/:id', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('BILL_GET_BY_ID counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -283,7 +352,11 @@ app.get('/v1/bill/:id', (req, res) => {
                     {
                         where: { id: req.params.id, owner_id: owner_id }
                     },//{include:[{model:File}]}//{include:[{model:File, as:'file'}]}, //{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
-                ).then(bill => res.status(200).json(bill)).catch(err => {
+                ).then(bill => {
+                    logger.info ("GET BILL by ID succcessful"+bill)
+                    res.status(200).json(bill)
+                }).catch(err => {
+                    logger.info ("Bill not found"+err)
                     console.log(err);
                     res.status(404).json({
                         "message": "bill not found"
@@ -300,10 +373,17 @@ app.get('/v1/bill/:id', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("BILL_GET_BY_ID Time Duration",duration);
 });
 
 //----------------------------------------- update bill by id -----------------------------------------//
 app.put('/v1/bill/:id', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('BILL_PUT counter');
+
     let vendor = req.body.vendor;
     let bill_date = req.body.bill_date;
     let due_date = req.body.due_date;
@@ -335,7 +415,11 @@ app.put('/v1/bill/:id', (req, res) => {
                     where: {
                         id: req.params.id, owner_id: owner_id
                     }
-                }).then(bill => res.status(200).json(data)).catch(err => {
+                }).then(bill => {
+                    logger.info ("BILL UPDATE succcessful"+data)
+                    res.status(200).json(data)
+                }).catch(err => {
+                    logger.info ("BILL UPDATE failed"+err)
                     console.log(err);
                     res.status(400).end();
                 });
@@ -350,10 +434,17 @@ app.put('/v1/bill/:id', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("BILL_PUT Time Duration",duration);
 });
 
 //----------------------------------------- delete bill -----------------------------------------//
 app.delete('/v1/bill/:id', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('BILL_DELETE counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -432,8 +523,10 @@ app.delete('/v1/bill/:id', (req, res) => {
                     Bill.destroy({
                         where: { id: req.params.id, owner_id: owner_id }
                     }).then(function (result) {
+                        logger.info ("bill deleted")
                         res.status(204).end();
                     }).catch(err => {
+                        logger.info ("BILL DELETE failed"+err)
                         console.log(err);
                         res.status(404).json({
                             "message": "cannot delete bill"
@@ -456,6 +549,9 @@ app.delete('/v1/bill/:id', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("BILL_DELETE Time Duration",duration);
 });
 
 
@@ -496,6 +592,10 @@ var upload = multer({ storage: storage, fileFilter: fileFilter, preservePath: tr
 
 //----------------------------------------- attach a file -----------------------------------------//
 app.post('/v1/bill/:id/file', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('FILE_POST counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -602,10 +702,17 @@ app.post('/v1/bill/:id/file', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("FILE_POST Time Duration",duration);
 });
 
 //----------------------------------------- get a file -----------------------------------------//
 app.get('/v1/bill/:id/file/:id', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('FILE_GET counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -623,7 +730,11 @@ app.get('/v1/bill/:id/file/:id', (req, res) => {
                     {
                         where: { id: req.params.id },
                     }
-                ).then(file => res.status(200).json(file)).catch(err => {
+                ).then(file => {
+                    logger.info ("GET FILE successful"+file)
+                    res.status(200).json(file)
+                }).catch(err => {
+                    logger.error ("GET FILE failed"+err)
                     console.log(err);
                     res.status(404).json({
                         "message": "file not found"
@@ -640,10 +751,17 @@ app.get('/v1/bill/:id/file/:id', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("FILE_GET Time Duration",duration);
 });
 
 //----------------------------------------- delete a file -----------------------------------------//
 app.delete('/v1/bill/:billid/file/:id', (req, res) => {
+    var date = new Date();
+    var startTime = date.getMilliseconds();
+    sdc.increment('FILE_DELETE counter');
+
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -681,8 +799,8 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
                         }
                     });
 
-                    const path = file.url;
-                    fs.unlink(path, (err) => {
+                    const path2 = file.url;
+                    fs.unlink(path2, (err) => {
                         if (err) throw err;
                         console.log('successfully deleted from dir');
                         res.status(204).end();
@@ -724,6 +842,9 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
             res.status(400).end();
         });
     };
+    var endTime = date.getMilliseconds();
+    var duration = (endTime-startTime);
+    sdc.timing("FILE_DELETE Time Duration",duration);
 });
 
 
