@@ -14,6 +14,7 @@ const multer = require('multer');
 const File = require('./sequelize').File;
 const Metadata = require('./sequelize').Metadata;
 const fs = require('fs');
+const path = require('path');
 
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
@@ -798,8 +799,8 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
                         }
                     });
 
-                    const path = file.url;
-                    fs.unlink(path, (err) => {
+                    const path2 = file.url;
+                    fs.unlink(path2, (err) => {
                         if (err) throw err;
                         console.log('successfully deleted from dir');
                         res.status(204).end();
