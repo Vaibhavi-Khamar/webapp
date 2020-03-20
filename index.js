@@ -6,7 +6,7 @@ const User = require('./sequelize').User;
 const Bill = require('./sequelize').Bill;
 const compare = require('tsscmp');
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const uuidv1 = require('uuid/v1');
 
