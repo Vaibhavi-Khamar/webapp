@@ -41,7 +41,7 @@ var logger = new winston.createLogger({
 });
 
 var SDC = require('statsd-client'),
-    sdc = new SDC({host: 'statsd.example.com', port: 8125});
+    sdc = new SDC({host: 'localhost', port: 8125});
 
 //----------------------------------------- Create user -----------------------------------------//
 app.post('/v1/user', (req, res) => {
