@@ -37,7 +37,7 @@ var logger = new winston.createLogger({
         //     filename: path.resolve(__dirname, "logs/csye6225.log"),
         //     json: true
         // })
-        new winston.transports.File({ filename: 'logs/csye6225.log' })
+        new winston.transports.File({ filename: '../logs/csye6225.log' })
     ]
 });
 
