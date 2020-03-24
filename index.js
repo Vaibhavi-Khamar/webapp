@@ -30,14 +30,14 @@ const winston = require('winston');
 var logger = new winston.createLogger({
     level: 'info',
     transports: [
-        // new (winston.transports.Console)(),
-        // new winston.transports.File({
-        //     timestamp: true,
-        //     name: "cloudwatch_log_stream",
-        //     filename: path.resolve(__dirname, "logs/csye6225.log"),
-        //     json: true
-        // })
-        new winston.transports.File({ filename: '../logs/csye6225.log' })
+        new (winston.transports.Console)(),
+        new winston.transports.File({
+            timestamp: true,
+            name: "cloudwatch_log_stream",
+            filename: path.resolve(__dirname, "logs/csye6225.log"),
+            json: true
+        })
+        //new winston.transports.File({ filename: '../logs/csye6225.log' })
     ]
 });
 
@@ -570,9 +570,9 @@ app.delete('/v1/bill/:id', (req, res) => {
 // });
 
 var storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, "./uploads"); //Users/vaibhavi/webapp/uploads"
-    },
+    // destination: function (req, file, callback) {
+    //     callback(null, "./uploads"); //Users/vaibhavi/webapp/uploads"
+    // },
     filename: function (req, file, callback) {
         callback(null, file.originalname + '-' + Date.now());
         console.log(file.originalname)
