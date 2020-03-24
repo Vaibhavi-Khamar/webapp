@@ -46,7 +46,7 @@ var SDC = require('statsd-client'),
 
 //----------------------------------------- Create user -----------------------------------------//
 app.post('/v1/user', (req, res) => {
-    logger.info("USER_POST LOG.");
+    logger.info("USER_POST LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('USER_POST counter');
