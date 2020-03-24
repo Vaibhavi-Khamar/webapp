@@ -80,7 +80,7 @@ app.post('/v1/user', (req, res) => {
                     User.create({
                         id, first_name: req.body.first_name, last_name: req.body.last_name, password: hash, email_address: req.body.email_address, createdAt, updatedAt
                     }).then(user => {
-                        logger.info ("User created"+data)
+                        logger.info ("User created")
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
@@ -129,7 +129,7 @@ app.get('/v1/user/self', (req, res) => {
                     createdAt: user[0].createdAt,
                     updatedAt: user[0].updatedAt
                 }
-                logger.info ("GET USER successful"+data)
+                logger.info ("GET USER successful")
                 console.log(data)
                 return res.status(200).json(data)
             } else {
@@ -154,6 +154,7 @@ app.get('/v1/user/self', (req, res) => {
 
 //----------------------------------------- update user -----------------------------------------//
 app.put('/v1/user/self', (req, res) => {
+    logger.info("USER_PUT LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('USER_PUT counter');
@@ -212,6 +213,7 @@ app.put('/v1/user/self', (req, res) => {
 
 //----------------------------------------- create bill -----------------------------------------//
 app.post('/v1/bill', (req, res) => {
+    logger.info("BILL_POST LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('BILL_POST counter');
@@ -259,7 +261,7 @@ app.post('/v1/bill', (req, res) => {
                         id, vendor, owner_id, bill_date, due_date, amount_due, categories, payment_status, createdAt, updatedAt
                     }).then(bill => {
                         //Bill.update({ owner_id }, { where: { id: id } }).then(bill => res.end())
-                        logger.info ("Bill created"+data)
+                        logger.info ("Bill created")
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
@@ -306,7 +308,7 @@ app.get('/v1/bills', (req, res) => {
             if (valid) {
                 var owner_id = user.id;
                 Bill.findAll({ where: { owner_id: owner_id } }).then(bill => {
-                    logger.info ("GET BILL succcessful"+bill)
+                    logger.info ("GET BILL succcessful")
                     return res.status(200).json(bill)
                 }).catch(err => {
                     logger.info ("Bill not found"+err)
@@ -333,6 +335,7 @@ app.get('/v1/bills', (req, res) => {
 
 //----------------------------------------- get bill by id -----------------------------------------//
 app.get('/v1/bill/:id', (req, res) => {
+    logger.info("BILL_GET_BY_ID LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('BILL_GET_BY_ID counter');
@@ -356,7 +359,7 @@ app.get('/v1/bill/:id', (req, res) => {
                         where: { id: req.params.id, owner_id: owner_id }
                     },//{include:[{model:File}]}//{include:[{model:File, as:'file'}]}, //{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
                 ).then(bill => {
-                    logger.info ("GET BILL by ID succcessful"+bill)
+                    logger.info ("GET BILL by ID succcessful")
                     res.status(200).json(bill)
                 }).catch(err => {
                     logger.info ("Bill not found"+err)
@@ -383,6 +386,7 @@ app.get('/v1/bill/:id', (req, res) => {
 
 //----------------------------------------- update bill by id -----------------------------------------//
 app.put('/v1/bill/:id', (req, res) => {
+    logger.info("BILL_PUT LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('BILL_PUT counter');
@@ -419,7 +423,7 @@ app.put('/v1/bill/:id', (req, res) => {
                         id: req.params.id, owner_id: owner_id
                     }
                 }).then(bill => {
-                    logger.info ("BILL UPDATE succcessful"+data)
+                    logger.info ("BILL UPDATE succcessful")
                     res.status(200).json(data)
                 }).catch(err => {
                     logger.info ("BILL UPDATE failed"+err)
@@ -444,6 +448,7 @@ app.put('/v1/bill/:id', (req, res) => {
 
 //----------------------------------------- delete bill -----------------------------------------//
 app.delete('/v1/bill/:id', (req, res) => {
+    logger.info("BILL_DELETE LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('BILL_DELETE counter');
@@ -595,6 +600,7 @@ var upload = multer({ storage: storage, fileFilter: fileFilter, preservePath: tr
 
 //----------------------------------------- attach a file -----------------------------------------//
 app.post('/v1/bill/:id/file', (req, res) => {
+    logger.info("FILE_POST LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('FILE_POST counter');
@@ -712,6 +718,7 @@ app.post('/v1/bill/:id/file', (req, res) => {
 
 //----------------------------------------- get a file -----------------------------------------//
 app.get('/v1/bill/:id/file/:id', (req, res) => {
+    logger.info("FILE_GET LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('FILE_GET counter');
@@ -761,6 +768,7 @@ app.get('/v1/bill/:id/file/:id', (req, res) => {
 
 //----------------------------------------- delete a file -----------------------------------------//
 app.delete('/v1/bill/:billid/file/:id', (req, res) => {
+    logger.info("FILE_DELETE LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('FILE_DELETE counter');
