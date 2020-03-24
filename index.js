@@ -30,13 +30,14 @@ const winston = require('winston');
 var logger = new winston.createLogger({
     level: 'info',
     transports: [
-        new (winston.transports.Console)(),
-        new winston.transports.File({
-            timestamp: true,
-            name: "cloudwatch_log_stream",
-            filename: path.resolve(__dirname, "logs/csye6225.log"),
-            json: true
-        })
+        // new (winston.transports.Console)(),
+        // new winston.transports.File({
+        //     timestamp: true,
+        //     name: "cloudwatch_log_stream",
+        //     filename: path.resolve(__dirname, "logs/csye6225.log"),
+        //     json: true
+        // })
+        new winston.transports.File({ filename: 'logs/csye6225.log' })
     ]
 });
 
