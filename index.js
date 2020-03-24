@@ -14,7 +14,6 @@ const multer = require('multer');
 const File = require('./sequelize').File;
 const Metadata = require('./sequelize').Metadata;
 const fs = require('fs');
-const path = require('path');
 
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
@@ -27,7 +26,8 @@ const BUCKET_NAME = process.env.S3BUCKET_NAME;
 app.use(bodyParser.json())
 
 const winston = require('winston');
-var logger = new winston.createLogger({
+const path = require('path');
+const logger = new winston.createLogger({
     level: 'info',
     transports: [
         new (winston.transports.Console)(),
@@ -46,6 +46,7 @@ var SDC = require('statsd-client'),
 
 //----------------------------------------- Create user -----------------------------------------//
 app.post('/v1/user', (req, res) => {
+    logger.info("USER_POST LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('USER_POST counter');
@@ -102,6 +103,7 @@ app.post('/v1/user', (req, res) => {
 
 //----------------------------------------- get user -----------------------------------------//
 app.get('/v1/user/self', (req, res) => {
+    logger.info("USER_GET LOG");
     var date = new Date();
     var startTime = date.getMilliseconds();
     sdc.increment('USER_GET counter');
