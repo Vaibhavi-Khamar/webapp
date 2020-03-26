@@ -859,7 +859,7 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
 });
 
 app.get('/healthcheck', (req, res) => {
-    return res.status(200)
+    return res.status(200).end("hello world")
 });
 
 const port = 3001
