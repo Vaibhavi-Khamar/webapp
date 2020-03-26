@@ -858,6 +858,9 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
     sdc.timing("FILE_DELETE Time Duration",duration);
 });
 
+app.get('/healthcheck', (req, res) => {
+    return res.status(200)
+});
 
 const port = 3001
 app.listen(port, () => {
