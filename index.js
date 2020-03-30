@@ -864,7 +864,7 @@ app.get('/healthcheck', (req, res) => {
     })
 });
 
-app.post("http://prod.vaibhavikhamar.me/v1/bill/test",(req,res)=>{
+app.post("/v1/bill/test",(req,res)=>{
 	// const { url,method,rps,concurrency,body,requests,header } = req.body.details;
 	// console.log(req.body.details)
 	const options = {
@@ -877,7 +877,7 @@ app.post("http://prod.vaibhavikhamar.me/v1/bill/test",(req,res)=>{
         },
         body: JSON.stringify({"vendor":"NEU","bill_date":"2020-01-08","due_date":"2020-01-27","amount_due":7000,"categories":["college","tution","spring2019"],"payment_status":"paid"}),
 	
-	requestsPerSecond:5,
+	requestsPerSecond:2000,
 	};
 	
 	loadtest.loadTest(options, function(error, result)
