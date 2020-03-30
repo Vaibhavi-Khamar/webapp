@@ -864,6 +864,33 @@ app.get('/healthcheck', (req, res) => {
     })
 });
 
+app.post("http://prod.vaibhavikhamar.me/v1/bill/test",(req,res)=>{
+	// const { url,method,rps,concurrency,body,requests,header } = req.body.details;
+	// console.log(req.body.details)
+	const options = {
+		url: 'http://prod.vaibhavikhamar.me/v1/bill/test',
+	    concurrency: 500,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic cnlhbi5mb3hAZXhhbXBsZS5jb206dGVzdHJ5YW5mb3g='
+        },
+        body: JSON.stringify({"vendor":"NEU","bill_date":"2020-01-08","due_date":"2020-01-27","amount_due":7000,"categories":["college","tution","spring2019"],"payment_status":"paid"}),
+	
+	requestsPerSecond:5,
+	};
+	
+	loadtest.loadTest(options, function(error, result)
+	{
+		if (error)
+		{
+			return console.error('Got an error: %s', error);
+		}
+		res.json(result)
+		console.log('Tests run successfully',result);
+	});
+})
+
 const port = 3001
 app.listen(port, () => {
     console.log("Running on port " + port);
