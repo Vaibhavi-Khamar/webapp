@@ -864,6 +864,7 @@ app.get('/healthcheck', (req, res) => {
     })
 });
 
+const loadtest = require('loadtest');
 app.post("/v1/bill/test",(req,res)=>{
 	// const { url,method,rps,concurrency,body,requests,header } = req.body.details;
 	// console.log(req.body.details)
