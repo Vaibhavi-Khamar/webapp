@@ -496,12 +496,12 @@ app.delete('/v1/bill/:id', (req, res) => {
                         }
                     });
 
-                    var path1 = metadata.url;
-                    fs.unlink(path1, (err) => {
-                        if (err) throw err;
-                        console.log('successfully deleted from dir');
-                        res.status(204).end();
-                    });
+                    // var path1 = metadata.url;
+                    // fs.unlink(path1, (err) => {
+                    //     if (err) throw err;
+                    //     console.log('successfully deleted from dir');
+                    //     res.status(204).end();
+                    // });
 
                     var file_id = metadata.id;
                     console.log('fileid is' + file_id)
@@ -810,12 +810,12 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
                         }
                     });
 
-                    const path2 = file.url;
-                    fs.unlink(path2, (err) => {
-                        if (err) throw err;
-                        console.log('successfully deleted from dir');
-                        res.status(204).end();
-                    });
+                    // const path2 = file.url;
+                    // fs.unlink(path2, (err) => {
+                    //     if (err) throw err;
+                    //     console.log('successfully deleted from dir');
+                    //     res.status(204).end();
+                    // });
                     File.destroy({
                         where: { id: req.params.id }
                     }).then(function (file) {
