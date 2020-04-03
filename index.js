@@ -42,7 +42,7 @@ const logger = new winston.createLogger({
 });
 
 var SDC = require('statsd-client'),
-    sdc = new SDC({host: 'localhost', port: 8125});
+    sdc = new SDC({ host: 'localhost', port: 8125 });
 
 //----------------------------------------- Create user -----------------------------------------//
 app.post('/v1/user', (req, res) => {
@@ -74,17 +74,17 @@ app.post('/v1/user', (req, res) => {
                 { where: { email_address: req.body.email_address } }
             ).then(user => {
                 if (user) {
-                    logger.info ("User already registered")
+                    logger.info("User already registered")
                     res.status(400).send("User already registered")
                 } else {
                     User.create({
                         id, first_name: req.body.first_name, last_name: req.body.last_name, password: hash, email_address: req.body.email_address, createdAt, updatedAt
                     }).then(user => {
-                        logger.info ("User created")
+                        logger.info("User created")
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
-                        logger.error ("Error in create user"+err)
+                        logger.error("Error in create user" + err)
                         console.log(err);
                         res.status(400).end()
                     });
@@ -96,8 +96,8 @@ app.post('/v1/user', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("USER_POST Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("USER_POST Time Duration", duration);
 })
 
 
@@ -129,7 +129,7 @@ app.get('/v1/user/self', (req, res) => {
                     createdAt: user[0].createdAt,
                     updatedAt: user[0].updatedAt
                 }
-                logger.info ("GET USER successful")
+                logger.info("GET USER successful")
                 console.log(data)
                 return res.status(200).json(data)
             } else {
@@ -148,8 +148,8 @@ app.get('/v1/user/self', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("USER_GET Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("USER_GET Time Duration", duration);
 });
 
 //----------------------------------------- update user -----------------------------------------//
@@ -186,10 +186,10 @@ app.put('/v1/user/self', (req, res) => {
                         }, {
                             where: { email_address: req.body.email_address }
                         }).then(user => {
-                            logger.info ("User updated")
+                            logger.info("User updated")
                             res.status(204).end()
                         }).catch(err => {
-                            logger.error ("Error in updating user"+err)
+                            logger.error("Error in updating user" + err)
                             console.log(err);
                             res.status(400).end();
                         });
@@ -207,8 +207,8 @@ app.put('/v1/user/self', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("USER_PUT Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("USER_PUT Time Duration", duration);
 });
 
 //----------------------------------------- create bill -----------------------------------------//
@@ -261,11 +261,11 @@ app.post('/v1/bill', (req, res) => {
                         id, vendor, owner_id, bill_date, due_date, amount_due, categories, payment_status, createdAt, updatedAt
                     }).then(bill => {
                         //Bill.update({ owner_id }, { where: { id: id } }).then(bill => res.end())
-                        logger.info ("Bill created")
+                        logger.info("Bill created")
                         console.log(data)
                         res.status(201).json(data)
                     }).catch(err => {
-                        logger.error ("Create bill failed"+err)
+                        logger.error("Create bill failed" + err)
                         console.log(err);
                         res.status(400).end()
                     });
@@ -282,8 +282,8 @@ app.post('/v1/bill', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("BILL_POST Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("BILL_POST Time Duration", duration);
 });
 
 
@@ -308,10 +308,10 @@ app.get('/v1/bills', (req, res) => {
             if (valid) {
                 var owner_id = user.id;
                 Bill.findAll({ where: { owner_id: owner_id } }).then(bill => {
-                    logger.info ("GET BILL succcessful")
+                    logger.info("GET BILL succcessful")
                     return res.status(200).json(bill)
                 }).catch(err => {
-                    logger.info ("Bill not found"+err)
+                    logger.info("Bill not found" + err)
                     console.log(err);
                     res.status(404).json({
                         "message": "bill not found"
@@ -329,8 +329,8 @@ app.get('/v1/bills', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("BILL_GET Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("BILL_GET Time Duration", duration);
 });
 
 //----------------------------------------- get bill by id -----------------------------------------//
@@ -359,10 +359,10 @@ app.get('/v1/bill/:id', (req, res) => {
                         where: { id: req.params.id, owner_id: owner_id }
                     },//{include:[{model:File}]}//{include:[{model:File, as:'file'}]}, //{ include: [ {model:Metadata, as:metadata} ] },//{ include: [ Metadata ] }
                 ).then(bill => {
-                    logger.info ("GET BILL by ID succcessful")
+                    logger.info("GET BILL by ID succcessful")
                     res.status(200).json(bill)
                 }).catch(err => {
-                    logger.info ("Bill not found"+err)
+                    logger.info("Bill not found" + err)
                     console.log(err);
                     res.status(404).json({
                         "message": "bill not found"
@@ -380,8 +380,8 @@ app.get('/v1/bill/:id', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("BILL_GET_BY_ID Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("BILL_GET_BY_ID Time Duration", duration);
 });
 
 //----------------------------------------- update bill by id -----------------------------------------//
@@ -423,10 +423,10 @@ app.put('/v1/bill/:id', (req, res) => {
                         id: req.params.id, owner_id: owner_id
                     }
                 }).then(bill => {
-                    logger.info ("BILL UPDATE succcessful")
+                    logger.info("BILL UPDATE succcessful")
                     res.status(200).json(data)
                 }).catch(err => {
-                    logger.info ("BILL UPDATE failed"+err)
+                    logger.info("BILL UPDATE failed" + err)
                     console.log(err);
                     res.status(400).end();
                 });
@@ -442,8 +442,8 @@ app.put('/v1/bill/:id', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("BILL_PUT Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("BILL_PUT Time Duration", duration);
 });
 
 //----------------------------------------- delete bill -----------------------------------------//
@@ -531,10 +531,10 @@ app.delete('/v1/bill/:id', (req, res) => {
                     Bill.destroy({
                         where: { id: req.params.id, owner_id: owner_id }
                     }).then(function (result) {
-                        logger.info ("bill deleted")
+                        logger.info("bill deleted")
                         res.status(204).end();
                     }).catch(err => {
-                        logger.info ("BILL DELETE failed"+err)
+                        logger.info("BILL DELETE failed" + err)
                         console.log(err);
                         res.status(404).json({
                             "message": "cannot delete bill"
@@ -558,8 +558,8 @@ app.delete('/v1/bill/:id', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("BILL_DELETE Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("BILL_DELETE Time Duration", duration);
 });
 
 
@@ -712,8 +712,8 @@ app.post('/v1/bill/:id/file', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("FILE_POST Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("FILE_POST Time Duration", duration);
 });
 
 //----------------------------------------- get a file -----------------------------------------//
@@ -741,10 +741,10 @@ app.get('/v1/bill/:id/file/:id', (req, res) => {
                         where: { id: req.params.id },
                     }
                 ).then(file => {
-                    logger.info ("GET FILE successful"+file)
+                    logger.info("GET FILE successful" + file)
                     res.status(200).json(file)
                 }).catch(err => {
-                    logger.error ("GET FILE failed"+err)
+                    logger.error("GET FILE failed" + err)
                     console.log(err);
                     res.status(404).json({
                         "message": "file not found"
@@ -762,8 +762,8 @@ app.get('/v1/bill/:id/file/:id', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("FILE_GET Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("FILE_GET Time Duration", duration);
 });
 
 //----------------------------------------- delete a file -----------------------------------------//
@@ -854,8 +854,8 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
         });
     };
     var endTime = date.getMilliseconds();
-    var duration = (endTime-startTime);
-    sdc.timing("FILE_DELETE Time Duration",duration);
+    var duration = (endTime - startTime);
+    sdc.timing("FILE_DELETE Time Duration", duration);
 });
 
 app.get('/healthcheck', (req, res) => {
@@ -863,6 +863,160 @@ app.get('/healthcheck', (req, res) => {
         "message": "WELCOME"
     })
 });
+
+
+
+
+
+
+var { Consumer } = require('sqs-consumer');
+aws.config.update({
+    region: 'us-east-1'
+});
+
+const sqs = new aws.SQS({
+    apiVersion: '2019-12-01'
+});
+
+const URL = `https://sqs.us-east-1.amazonaws.com/148155028146/webQueue`;
+let sns = new aws.SNS();
+let topic = {};
+let ARN;
+
+const { Op } = require('sequelize')
+let moment = require('moment')
+app.get('/v1/bills/due/:x', (req, res) => {
+
+    var credentials = auth(req);
+    if (!credentials) {
+        res.statusCode = 401
+        res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+        res.end('Unauthorized : Authentication error')
+    } else {
+        var username = credentials.name;
+        var password = credentials.pass;
+        User.findOne({ where: { email_address: username } }).then(user => {
+            var valid = true;
+            valid = compare(username, user.email_address) && valid;
+            valid = bcrypt.compareSync(password, user.password) && valid;
+            if (valid) {
+
+                var owner_id = user.id;
+                var givenDays = JSON.parse(req.params.x);
+                console.log("givenDays " + givenDays);
+                var a = new Date();
+                var b = new Date();
+                b.setDate(a.getDate() + givenDays);
+                var startDate = moment(a).format('YYYY-MM-DD');
+                console.log("startDate " + startDate);
+                var endDate = moment(b).format('YYYY-MM-DD');
+                console.log("endDate " + endDate);
+
+                Bill.findAll({
+                    where: { owner_id: owner_id, due_date: { [Op.lte]: endDate, [Op.gte]: startDate } }
+                }).then(result => {
+
+                    // console.log("GET all bills successfull")
+                    // return res.status(200).json(bill)
+
+                    // if(result != null){
+
+                    console.log("-------Success-------");
+
+                    let billsDue = [];
+                    result.forEach(element => {
+                        let obj = {
+                            email: user.email_address,
+                            id: element.id,
+                            numberOfDays: req.params.x
+                        };
+                        billsDue.push(obj);
+                    });
+
+                    const message = JSON.stringify({
+                        "billDue": JSON.stringify(billsDue)
+                    });
+
+                    var params = {
+                        QueueUrl: URL,
+                        MessageBody: message
+                    };
+
+                    sqs.sendMessage(params, function (err, data) {
+                        if (err) {
+                            console.log("Error", err);
+                        } else {
+                            console.log("sendMessage Success", data.MessageId);
+                        }
+                    });
+
+                    var sqsConsumer = Consumer.create({
+                        queueUrl: URL,
+                        handleMessage: async (message) => {
+                            console.log('Received a message');
+                            var x = sqs.receiveMessage(message);
+                            var y = message.Body;
+                            console.log(message);
+                            sns.listTopics(topic, (err, data) => {
+                                if (err) {
+                                    res.status(400).json({ msg: 'err in sns listTopics' });
+                                } else {
+                                    ARN = 'arn:aws:sns:us-east-1:148155028146:billsDue_publish';
+                                    let topicParams = {
+                                        TopicArn: ARN,
+                                        MessageStructure: 'json',
+                                        Message: JSON.stringify({
+                                            "default": JSON.stringify(y)
+                                        })
+                                    };
+                                    sns.publish(topicParams, (err, data) => {
+                                        if (err) {
+                                            console.log({ msg: 'error in SNS publish' });
+                                            console.log(err);
+                                        } else {
+                                            console.log('SNS publish success', data);
+                                            console.log({ msg: 'Request recieved!' });
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                    sqsConsumer.on('error', (err) => {
+                        console.error(err.message);
+                    });
+                    sqsConsumer.on('processing_error', (err) => {
+                        console.error(err.message);
+                    });
+                    console.log('Consumer service is running');
+                    sqsConsumer.start();
+                    res.send(result);
+                    // }else{
+                    //     return res.status(400).json({ msg: 'User doesnt have any bills!' });
+                    // }
+                }).catch(err => {
+                    console.log(err);
+                    res.status(404).json({
+                        "message": "bill not found"
+                    });
+                });
+            } else {
+                console.log("Authentication error")
+                res.statusCode = 401
+                res.setHeader('WWW-Authenticate', 'Basic realm="user Authentication"')
+                res.end('Unauthorized : Authentication error')
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.status(400).end();
+        });
+    };
+});
+
+
+
+
+
 
 const port = 3001
 app.listen(port, () => {
