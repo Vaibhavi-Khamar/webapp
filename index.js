@@ -858,6 +858,8 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
     sdc.timing("FILE_DELETE Time Duration", duration);
 });
 
+
+
 app.get('/healthcheck', (req, res) => {
     return res.status(200).json({
         "message": "WELCOME"
@@ -886,7 +888,7 @@ let ARN;
 const { Op } = require('sequelize')
 let moment = require('moment')
 app.get('/v1/bills/due/:x', (req, res) => {
-
+    logger.info("BILL_DUE LOG");
     var credentials = auth(req);
     if (!credentials) {
         res.statusCode = 401
@@ -971,10 +973,12 @@ app.get('/v1/bills/due/:x', (req, res) => {
                                     };
                                     sns.publish(topicParams, (err, data) => {
                                         if (err) {
-                                            console.log({ msg: 'error in SNS publish' });
+                                            logger.info("Error in SNS publish");
+                                            console.log({ msg: 'Error in SNS publish' });
                                             console.log(err);
                                         } else {
-                                            console.log('SNS publish success', data);
+                                            logger.info("SNS publish successful");
+                                            console.log('SNS publish successful', data);
                                             console.log({ msg: 'Request recieved!' });
                                         }
                                     })
