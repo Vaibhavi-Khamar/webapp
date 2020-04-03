@@ -931,7 +931,7 @@ app.get('/v1/bills/due/:x', (req, res) => {
                         billsDueList.push(obj);
                     });
 
-                    const message = JSON.stringify({ "bills": JSON.stringify(billsDuelist) });
+                    const message = JSON.stringify({ "bills": JSON.stringify(billsDueList) });
 
                     var params = {
                         QueueUrl: URL,
