@@ -858,7 +858,7 @@ app.delete('/v1/bill/:billid/file/:id', (req, res) => {
     sdc.timing("FILE_DELETE Time Duration", duration);
 });
 
-
+//----------------------------------------- healthcheck -----------------------------------------//
 
 app.get('/healthcheck', (req, res) => {
     return res.status(200).json({
@@ -866,10 +866,7 @@ app.get('/healthcheck', (req, res) => {
     })
 });
 
-
-
-
-
+//----------------------------------------- bill due -----------------------------------------//
 
 var { Consumer } = require('sqs-consumer');
 aws.config.update({
@@ -880,7 +877,7 @@ const sqs = new aws.SQS({
     apiVersion: '2019-12-01'
 });
 
-const URL = `https://sqs.us-east-1.amazonaws.com/148155028146/webQueue`;
+const URL = `https://sqs.us-east-1.amazonaws.com/148155028146/myQueue`;
 let sns = new aws.SNS();
 let topic = {};
 let ARN;
@@ -920,24 +917,21 @@ app.get('/v1/bills/due/:x', (req, res) => {
 
                     // console.log("GET all bills successfull")
                     // return res.status(200).json(bill)
-
                     // if(result != null){
 
                     console.log("-------Success-------");
 
-                    let billsDue = [];
+                    let billsDueList = [];
                     result.forEach(element => {
                         let obj = {
                             email: user.email_address,
                             id: element.id,
                             numberOfDays: req.params.x
                         };
-                        billsDue.push(obj);
+                        billsDueList.push(obj);
                     });
 
-                    const message = JSON.stringify({
-                        "billDue": JSON.stringify(billsDue)
-                    });
+                    const message = JSON.stringify({ "bills": JSON.stringify(billsDuelist) });
 
                     var params = {
                         QueueUrl: URL,
@@ -948,7 +942,7 @@ app.get('/v1/bills/due/:x', (req, res) => {
                         if (err) {
                             console.log("Error", err);
                         } else {
-                            console.log("sendMessage Success", data.MessageId);
+                            console.log("sendMessage Successful", data.MessageId);
                         }
                     });
 
@@ -963,7 +957,7 @@ app.get('/v1/bills/due/:x', (req, res) => {
                                 if (err) {
                                     res.status(400).json({ msg: 'err in sns listTopics' });
                                 } else {
-                                    ARN = 'arn:aws:sns:us-east-1:148155028146:billsDue_publish';
+                                    ARN = 'arn:aws:sns:us-east-1:148155028146:bill_due';
                                     let topicParams = {
                                         TopicArn: ARN,
                                         MessageStructure: 'json',
@@ -1016,10 +1010,6 @@ app.get('/v1/bills/due/:x', (req, res) => {
         });
     };
 });
-
-
-
-
 
 
 const port = 3001
