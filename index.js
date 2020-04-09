@@ -917,7 +917,7 @@ app.get('/v1/bills/due/:x', (req, res) => {
 
                     // console.log("GET all bills successfull")
                     // return res.status(200).json(bill)
-                    // if(result != null){
+                    if(result != null){
 
                     console.log("-------Success-------");
 
@@ -989,9 +989,9 @@ app.get('/v1/bills/due/:x', (req, res) => {
                     console.log('Consumer service is running');
                     sqsConsumer.start();
                     res.send(result);
-                    // }else{
-                    //     return res.status(400).json({ msg: 'User doesnt have any bills!' });
-                    // }
+                    }else{
+                        return res.status(400).json({ msg: 'User doesnt have any bills!' });
+                    }
                 }).catch(err => {
                     console.log(err);
                     res.status(404).json({
