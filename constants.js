@@ -14,5 +14,8 @@ module.exports = {
     USERNAME: USERNAME,
     PASSWORD: PASSWORD,
     HOST: HOST,
-    DIALECT: DIALECT
+    DIALECT: DIALECT,
+    dialectOptions: {
+        ssl: true
+     }
 }
